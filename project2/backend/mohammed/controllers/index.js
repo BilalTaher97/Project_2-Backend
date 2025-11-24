@@ -1,7 +1,7 @@
 // controllers/user.controller.js
-import Service from "../utils/index.js";
+const Service = require("../utils/index.js");
 
-export const getDashboard = async (req, res) => {
+const getDashboard = async (req, res) => {
   try {
     const userId = 1;
 
@@ -21,7 +21,7 @@ export const getDashboard = async (req, res) => {
   }
 };
 
-export const getProfile = async (req, res) => {
+const getProfile = async (req, res) => {
   try {
     const userId = 1;
     const profile = await Service.getUserProfile(userId);
@@ -36,7 +36,7 @@ export const getProfile = async (req, res) => {
   }
 };
 
-export const getTasks = async (req, res) => {
+const getTasks = async (req, res) => {
   try {
     const userId = 1;
     const tasks = await Service.getUserTasks(userId);
@@ -51,11 +51,35 @@ export const getTasks = async (req, res) => {
   }
 };
 
-export const updateTask = async (req, res) => {
+const getTaskDetails = async (req, res) => {
+  try {
+    const userId = 1;
+    const { task_id } = req.params;
+
+    const task = await Service.getTaskDetails(task_id, userId);
+
+    if (!task)
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
+
+    res.json({
+      success: true,
+      task,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const updateTask = async (req, res) => {
   try {
     const userId = 1;
     const { task_id } = req.params;
     const { progress, status } = req.body;
+
+    console.log(req.body, "<<<");
 
     const task = await Service.getTaskDetails(task_id, userId);
 
@@ -92,24 +116,10 @@ export const updateTask = async (req, res) => {
   }
 };
 
-export const getTaskDetails = async (req, res) => {
-  try {
-    const userId = 1;
-    const { task_id } = req.params;
-
-    const task = await Service.getTaskDetails(task_id, userId);
-
-    if (!task)
-      return res
-        .status(404)
-        .json({ success: false, message: "Task not found" });
-
-    res.json({
-      success: true,
-      task,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+module.exports = {
+  getDashboard,
+  getProfile,
+  getTasks,
+  updateTask,
+  getTaskDetails,
 };

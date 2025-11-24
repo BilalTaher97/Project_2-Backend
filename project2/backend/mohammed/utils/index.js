@@ -1,4 +1,4 @@
-import pool from "../../models/db.js";
+const pool = require("../../models/db.js");
 
 /* ===============================
    Dashboard Services
@@ -64,7 +64,6 @@ const getUserTasks = async (userId) => {
   return (await pool.query(query, [userId])).rows;
 };
 
-
 const insertTaskProgress = async (taskId, userId, progress) => {
   const query = `
     INSERT INTO task_progress (task_id, employee_id, progress_percentage)
@@ -93,7 +92,6 @@ const updateTaskProgress = async (taskId, userId, progress) => {
   return (await pool.query(query, [progress, taskId, userId])).rows[0];
 };
 
-
 const updateTaskStatus = async (taskId, status) => {
   const query = `UPDATE tasks SET status = $1 WHERE id = $2`;
   return pool.query(query, [status, taskId]);
@@ -116,7 +114,7 @@ const getTaskDetails = async (taskId, userId) => {
   return (await pool.query(query, [taskId, userId])).rows[0];
 };
 
-export default {
+module.exports = {
   getUserStatus,
 
   getUserProfile,
@@ -125,10 +123,10 @@ export default {
   getUserTaskProgressList,
 
   updateTaskStatus,
-  
+
   getTaskDetails,
 
   insertTaskProgress,
   doWeHaveTaskProgressBefore,
-  updateTaskProgress
+  updateTaskProgress,
 };

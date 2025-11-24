@@ -1,11 +1,11 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   getDashboard,
   getProfile,
   getTasks,
   updateTask,
   getTaskDetails,
-} from "../controllers/index.js";
+} = require("../controllers/index.js");
 
 const userRouter = express.Router();
 
@@ -24,4 +24,4 @@ userRouter.put("/tasks/:task_id", updateTask);
 // Task details by ID
 userRouter.get("/tasks/:task_id", getTaskDetails);
 
-export default userRouter;
+module.exports = userRouter;
