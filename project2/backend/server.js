@@ -15,11 +15,10 @@ app.use(express.json());
 
 // Routes Middleware
 app.use("/admin", adminRouter);
-app.use("/user", userRouter);
-
+app.use("/user", userRouter.default);
 
 // Handles any other endpoints [unassigned - endpoints]
 app.use("*", (req, res) => res.status(404).json("NO content at this path"));
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server listening at http://localhost:${PORT}`);
 });
