@@ -3,7 +3,7 @@ const Service = require("../utils/index.js");
 
 const getDashboard = async (req, res) => {
   try {
-    const userId = 1;
+    const userId = req.token.id;
 
     const status = await Service.getUserStatus(userId);
     const taskProgress = await Service.getUserTaskProgressList(userId);
@@ -12,7 +12,7 @@ const getDashboard = async (req, res) => {
       success: true,
       data: {
         status,
-        taskProgress: taskProgress,
+        tasks: taskProgress,
       },
     });
   } catch (err) {
@@ -23,7 +23,7 @@ const getDashboard = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    const userId = 1;
+    const userId = req.token.id;
     const profile = await Service.getUserProfile(userId);
 
     res.json({
@@ -38,7 +38,7 @@ const getProfile = async (req, res) => {
 
 const getTasks = async (req, res) => {
   try {
-    const userId = 1;
+    const userId = req.token.id;
     const tasks = await Service.getUserTasks(userId);
 
     res.json({
@@ -53,7 +53,7 @@ const getTasks = async (req, res) => {
 
 const getTaskDetails = async (req, res) => {
   try {
-    const userId = 1;
+    const userId = req.token.id;
     const { task_id } = req.params;
 
     const task = await Service.getTaskDetails(task_id, userId);
@@ -75,15 +75,20 @@ const getTaskDetails = async (req, res) => {
 
 const updateTask = async (req, res) => {
   try {
-    const userId = 1;
+    const userId = req.token.id;
     const { task_id } = req.params;
-    const { progress, status } = req.body;
+    const { progress } = req.body;
 
-    console.log(req.body, "<<<");
+    if (progress < 0 || progress > 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Progress must be between 0 and 100",
+      });
+    }
+    const status =
+      progress === 100 ? "completed" : progress > 0 ? "in_progress" : "pending";
 
     const task = await Service.getTaskDetails(task_id, userId);
-
-    console.log(task_id, userId, progress, "<<<<<");
 
     if (!task)
       return res.status(403).json({
@@ -95,20 +100,16 @@ const updateTask = async (req, res) => {
       userId
     );
     if (doWeHaveTaskProgress) {
-      console.log("Updating existing task progress");
       await Service.updateTaskProgress(task_id, userId, progress);
+      await Service.updateTaskStatus(task_id, status);
     } else {
-      console.log("Inserting new task progress");
       await Service.insertTaskProgress(task_id, userId, progress);
-    }
-
-    if (!!status) {
       await Service.updateTaskStatus(task_id, status);
     }
 
     res.json({
       success: true,
-      message: "Task updated successfully",
+      message: "Progress updated successfully",
     });
   } catch (err) {
     console.error(err);

@@ -25,7 +25,8 @@ const getUserTaskProgressList = async (userId) => {
     SELECT 
       t.id,
       t.task_name,
-      COALESCE(tp.progress_percentage, 0) AS progress
+      COALESCE(tp.progress_percentage, 0) AS progress,
+      t.status
     FROM tasks t
     LEFT JOIN task_progress tp ON tp.task_id = t.id
     WHERE t.user_id = $1;
