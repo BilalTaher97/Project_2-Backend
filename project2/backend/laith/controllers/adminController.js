@@ -62,7 +62,7 @@ export const addEmployee = async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO users (name, photo, department, email, password ,role_id)
-       VALUES ($1, $2, $3, $4, $5)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id, name, email`,
       [name, photo, department, email, hashedPassword, 1]
     );
